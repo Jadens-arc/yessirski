@@ -21,9 +21,9 @@
                     <strong style="cursor: pointer; text-decoration: underline" onclick="play_track('{{ track.path }}')">{{ track.title }}</strong>
 
                     <div class="d-flex flex-row mb-3 mb-lg-0">
-                        <button class="btn btn-success me-2">Save to Spotify</button>
-                        <a class="btn btn-primary d-block me-2" href="/{{ track.path }}">Save to Device</a>
-                        <a class="btn btn-danger d-block me-2" href="{{ path("app_remove_track", {"uuid": track.uuid}) }}">Remove</a>
+                        <button class="btn btn-sm btn-success me-2">Save to Spotify</button>
+                        <a class="btn btn-sm btn-primary d-block me-2" href="/{{ track.path }}">Save to Device</a>
+                        <a class="btn btn-sm btn-danger d-block me-2" href="{{ path("app_remove_track", {"uuid": track.uuid}) }}">Remove</a>
                     </div>
                 </div>
                 <span>Downloaded @ {{ track.created|date("d/m/y I:i a") }}</span>
