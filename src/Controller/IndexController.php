@@ -78,20 +78,8 @@ class IndexController extends AbstractController
         return $this->render("Index/index.html.twig");
     }
 
-    #[Route('/my-tracks', name: 'app_my_tracks')]
-    public function my_songs(Request $request, EntityManagerInterface $em): Response
-    {
-        $tracks = $em->getRepository(Track::class)
-            ->createQueryBuilder('t')
-            ->where('t.active = true')
-            ->orderBy('t.created', 'DESC')
-            ->getQuery()
-            ->getResult();
-        return $this->render("Index/my-tracks.html.twig", ["tracks" => $tracks]);
-    }
 
-
-    #[Route('/my-tracks/remove/{uuid}', name: 'app_remove_track')]
+    #[Route('/tracks/remove/{uuid}', name: 'app_remove_track')]
     public function remove_track(Request $request, EntityManagerInterface $em, string $uuid): Response
     {
         $track = $em->getRepository(Track::class)->findOneBy(["uuid" => Uuid::fromString($uuid)]);

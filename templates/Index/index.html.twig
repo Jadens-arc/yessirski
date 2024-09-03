@@ -5,7 +5,7 @@
         <input name="url" id="url" placeholder="e.x. https://www.youtube.com/watch?v=Y..." class="border-0 w-100 form-control shadow-none me-3" type="url" required>
         <button class="btn btn-primary" id="search-btn">Search</button>
     </div>
-    <div id="download-container" class="visually-hidden"">
+    <div id="download-container" class="visually-hidden mb-4">
         <label for="video-title">Name the track</label>
         <div class="d-flex justify-content-center align-items-center form-control">
             <input name="video-title" id="video-title" placeholder="My favorite video" class="border-0 w-100 form-control shadow-none me-3" type="url" required>
@@ -71,7 +71,7 @@
                                 })
                                     .then(response => response.json())
                                     .then(data => {
-                                        window.location = "{{ path("app_my_tracks") }}#" + data["uuid"];
+                                        window.location.reload();
                                     })
 
                             });
