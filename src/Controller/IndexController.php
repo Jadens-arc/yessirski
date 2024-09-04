@@ -87,6 +87,6 @@ class IndexController extends AbstractController
         $track->setDeactivationDate(new \DateTime());
         $em->persist($track);
         $em->flush();
-        return $this->redirectToRoute("app_my_tracks");
+        return $this->redirectToRoute("app_index");
     }
 }
