@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TrackRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -33,11 +35,18 @@ class Track
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $deactivation_date = null;
 
+    /**
+     * @var Collection<int, ArtistTrack>
+     */
+    #[ORM\OneToMany(targetEntity: ArtistTrack::class, mappedBy: 'track')]
+    private Collection $artist_tracks;
+
     public function __construct()
     {
         $this->uuid = Uuid::v1();
         $this->created = new \DateTime();
         $this->active = true;
+        $this->artist_tracks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,6 +122,36 @@ class Track
     public function setDeactivationDate(?\DateTimeInterface $deactivation_date): static
     {
         $this->deactivation_date = $deactivation_date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ArtistTrack>
+     */
+    public function getArtistTracks(): Collection
+    {
+        return $this->artist_tracks;
+    }
+
+    public function addArtistTrack(ArtistTrack $artistTrack): static
+    {
+        if (!$this->artist_tracks->contains($artistTrack)) {
+            $this->artist_tracks->add($artistTrack);
+            $artistTrack->setTrack($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArtistTrack(ArtistTrack $artistTrack): static
+    {
+        if ($this->artist_tracks->removeElement($artistTrack)) {
+            // set the owning side to null (unless already changed)
+            if ($artistTrack->getTrack() === $this) {
+                $artistTrack->setTrack(null);
+            }
+        }
 
         return $this;
     }
