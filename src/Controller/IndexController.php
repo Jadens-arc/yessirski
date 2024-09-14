@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Track;
+use App\Service\MetadataManager;
 use App\Service\Ytdlp;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,7 +49,7 @@ class IndexController extends AbstractController
     }
 
     #[Route('/api/download', name: 'app_download')]
-    public function download(Request $request, EntityManagerInterface $em, Ytdlp $ytdlp): JsonResponse
+    public function download(Request $request, EntityManagerInterface $em, Ytdlp $ytdlp, MetadataManager $manager): JsonResponse
     {
         $request_data = json_decode($request->getContent(), true);
 
@@ -65,6 +66,7 @@ class IndexController extends AbstractController
         }
         $em->persist($track);
         $em->flush();
+        $manager->update_metadata($track);
         return $this->json([
             "status" => $result ? "success" : "error",
             "uuid" => $track->getUuid(),

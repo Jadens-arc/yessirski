@@ -50,34 +50,9 @@ class ArtistTrack
         return $this;
     }
 
-    /**
-     * @return Collection<int, Artist>
-     */
-    public function getArtist(): Collection
+    public function getArtist(): ?Artist
     {
         return $this->artist;
-    }
-
-    public function addArtist(Artist $artist): static
-    {
-        if (!$this->artist->contains($artist)) {
-            $this->artist->add($artist);
-            $artist->setArtistTrack($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArtist(Artist $artist): static
-    {
-        if ($this->artist->removeElement($artist)) {
-            // set the owning side to null (unless already changed)
-            if ($artist->getArtistTrack() === $this) {
-                $artist->setArtistTrack(null);
-            }
-        }
-
-        return $this;
     }
 
     public function setArtist(?Artist $artist): static

@@ -14,5 +14,25 @@ class MetadataManager
             throw new \Exception("Could not set title command '" . $command . "' failed");
         }
     }
+
+    public function update_artist(Track $track) {
+        $artists = $track->getArtistTracks();
+        if (!$artists) {
+            throw new \Exception("No artists to this track");
+        }
+        $artist = $artists->get(0)->getArtist();
+        $output = [];
+        $returnVar = 0;
+        $command = 'kid3-cli -c "set artist \"' . $artist->getName() . '\"" ' . $track->getPath();
+        exec($command, $output, $returnVar);
+        if ($returnVar) {
+            throw new \Exception("Could not set title command '" . $command . "' failed");
+        }
+    }
+
+    public function update_metadata(Track $track) {
+        $this->update_title($track);
+        $this->update_artist($track);
+    }
 }
 

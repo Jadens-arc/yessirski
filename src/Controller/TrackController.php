@@ -32,7 +32,7 @@ class TrackController extends AbstractController
             $track = $form->getData();
             $em->persist($track);
             $em->flush();
-            $manager->update_title($track);
+            $manager->update_metadata($track);
             return $this->redirectToRoute("app_index");
         }
 
