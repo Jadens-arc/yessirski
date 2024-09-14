@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        <div class="mb-3">
+            {{ form_widget(form.save) }}
+            <a class="btn btn-danger" onclick="
+                if (confirm('Are you sure you want to delete {{ track.title }}?')) {
+                    window.location = '{{ path("app_track_delete", {"uuid": track.uuid}) }}'
+                }
+            " >Delete</a>
+        </div>
+
+        <a data-bs-toggle="collapse" href="#advancedOptions" role="button" aria-expanded="false" aria-controls="advancedOptions">
+            Advanced Options
+        </a>
+        <div class="collapse" id="advancedOptions">
+            {{ form_rest(form) }}
+        </div>
+
+    {{ form_end(form, {"render_rest": false}) }}
+{% endblock %}

@@ -77,16 +77,4 @@ class IndexController extends AbstractController
     {
         return $this->render("Index/index.html.twig");
     }
-
-
-    #[Route('/tracks/remove/{uuid}', name: 'app_remove_track')]
-    public function remove_track(Request $request, EntityManagerInterface $em, string $uuid): Response
-    {
-        $track = $em->getRepository(Track::class)->findOneBy(["uuid" => Uuid::fromString($uuid)]);
-        $track->setActive(false);
-        $track->setDeactivationDate(new \DateTime());
-        $em->persist($track);
-        $em->flush();
-        return $this->redirectToRoute("app_index");
-    }
 }
