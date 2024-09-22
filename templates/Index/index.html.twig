@@ -24,20 +24,6 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        let playing = null;
-
-        function play_track(path) {
-            if (playing) {
-                playing.remove()
-            }
-            playing = new Audio(path);
-            playing.play();
-            playing.classList.add("w-100");
-            playing.classList.add("mt-4");
-            playing.controls = true;
-            document.getElementById("control_container_" + path).appendChild(playing);
-        }
-
         function addSelector(data = []) {
             let selector = $('<select class="artist-select"></select>');
             $("#artists").append(selector);

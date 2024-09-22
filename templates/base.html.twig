@@ -22,6 +22,21 @@
 
         {% block javascripts %}
         {% endblock %}
+        <script>
+            let playing = null;
+
+            function play_track(path) {
+                if (playing) {
+                    playing.remove()
+                }
+                playing = new Audio(path);
+                playing.play();
+                playing.classList.add("w-100");
+                playing.classList.add("mt-4");
+                playing.controls = true;
+                document.getElementById("control_container_" + path).appendChild(playing);
+            }
+        </script>
     </head>
     <body>
         {% include "menu.html.twig" %}
