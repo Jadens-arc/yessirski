@@ -75,4 +75,13 @@ class Artist
 
         return $this;
     }
+
+    public function getTracks(): Collection
+    {
+        $tracks = new ArrayCollection();
+        foreach ($this->artist_tracks as $artist_track) {
+            $tracks->add($artist_track->getTrack());
+        }
+        return $tracks;
+    }
 }

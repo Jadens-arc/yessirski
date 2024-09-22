@@ -2,4 +2,21 @@
 
 {% block body %}
     {{ form(form) }}
+    {% for track in artist.getTracks %}
+        <div id="{{ track.uuid }}" class="alert alert-light ">
+            <div class="d-flex flex-column-reverse flex-md-row justify-content-between ">
+                <strong style="cursor: pointer; text-decoration: underline" onclick="play_track('{{ track.path }}')">{{ track.title }}</strong>
+                <div class="d-flex flex-row mb-3 mb-lg-0">
+                    <a class="btn btn-sm btn-secondary d-block me-2" download href="/{{ track.path }}">Save to Device</a>
+                    <a class="btn btn-sm btn-primary" href="{{ path("app_track_edit", {"uuid": track.uuid}) }}">Edit</a>
+                </div>
+            </div>
+            <p>{% for artistTrack in track.artistTracks %}
+                    {{ artistTrack.artist.name }}{% if artistTrack != track.artistTracks|last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <span>Downloaded @ {{ track.created|date("d/m/y h:i a") }}</span>
+            <div id="control_container_{{ track.path }}"></div>
+        </div>
+    {% endfor %}
 {% endblock %}

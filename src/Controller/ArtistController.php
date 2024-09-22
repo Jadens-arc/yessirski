@@ -15,14 +15,19 @@ class ArtistController extends AbstractController
     #[Route('/artist', name: 'app_artist')]
     public function index(EntityManagerInterface $em): Response
     {
-        $artists = $em->getRepository(Artist::class)->findAll();
+        $artists = $em->getRepository(Artist::class)
+            ->createQueryBuilder("a")
+            ->addOrderBy("a.name")
+            ->getQuery()
+            ->getResult();
         return $this->render('artist/index.html.twig', ["artists" => $artists]);
     }
 
     #[Route('/artist/new', name: 'app_artist_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(ArtistType::class);
+        $artist = new Artist();
+        $form = $this->createForm(ArtistType::class, $artist);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -32,7 +37,7 @@ class ArtistController extends AbstractController
             return $this->redirectToRoute("app_artist");
         }
 
-        return $this->render('artist/new.html.twig', ["form" => $form]);
+        return $this->render('artist/new.html.twig', ["form" => $form, "artist" => $artist]);
     }
 
     #[Route('/artist/{id}', name: 'app_artist_edit')]
@@ -52,6 +57,6 @@ class ArtistController extends AbstractController
             $em->flush();
         }
 
-        return $this->render('artist/new.html.twig', ["form" => $form]);
+        return $this->render('artist/new.html.twig', ["form" => $form, "artist" => $artist]);
     }
 }
