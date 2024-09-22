@@ -11,9 +11,8 @@
             <input name="video-title" id="video-title" placeholder="My favorite video" class="border-0 w-100 form-control shadow-none me-3" type="url" required>
             <button class="btn btn-primary" id="download-btn">Download</button>
         </div>
-        <div class="form-control my-4 p-3">
-            <button class="btn btn-primary" id="add-artist-btn">Add Artist</button>
-            <div id="artists" class="artists"></div>
+        <div id="artists" class="form-control my-3 p-3 d-flex flex-row overflow-x-scroll align-items-center">
+            <button class="btn btn-primary me-2" style="width: fit-content; white-space: nowrap" id="add-artist-btn">Add Artist</button>
         </div>
     </div>
     <strong class="mt-3">Recently Saved...</strong>
@@ -52,22 +51,29 @@
             playing.controls = true;
             document.getElementById("control_container_" + path).appendChild(playing);
         }
+
+        function addSelector(data = []) {
+            let selector = $('<select class="artist-select"></select>');
+            $("#artists").append(selector);
+            let deleteBtn = $('<a class="text-light me-3"><i class="bi bi-trash"></i></a>')
+            deleteBtn.click(e => {
+                selector.select2('destroy');
+                selector.remove();
+                deleteBtn.remove();
+            });
+            $("#artists").append(deleteBtn);
+            selector.select2({
+                data: data,
+                ajax: {
+                    url: "{{ path("app_dropdown_artists") }}",
+                    dataType: "json",
+                }
+            });
+        }
+
         $("document").ready(() => {
             $("#add-artist-btn").on("click", (e) => {
-                // Create a new select element
-                let selector = $('<select class="artist-select"></select>');
-
-                $("#artists").append(selector);
-
-                // Initialize the select2 plugin on the new select element
-                selector.select2({
-                    ajax: {
-                        url: "{{ path("app_dropdown_artists") }}",
-                        dataType: "json",
-                    }
-                });
-
-                // Append the new select element to the artists container
+                addSelector();
             });
 
             $("#search-btn").on("click", () => {
