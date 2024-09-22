@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Artist;
+use App\Entity\ArtistTrack;
 use App\Entity\Track;
 use App\Form\TrackType;
 use App\Service\MetadataManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,16 +25,49 @@ class TrackController extends AbstractController
             throw new \Exception("Track not found");
         }
 
-        $artists = $em->getRepository(Artist::class)->findAll();
+        $artist_ids = [];
+        foreach ($track->getArtistTracks() as $artistTrack) {
+            $artist_ids[] = $artistTrack->getArtist()->getId();
+        }
 
         $form = $this->createForm(TrackType::class, $track);
+        $form->get("artists")->setData(implode(",", $artist_ids));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Track $track */
             $track = $form->getData();
+            $artist_ids = explode(",", $form->get("artists")->getData());
+
+            foreach ($track->getArtistTracks() as $artistTrack) {
+                $id = $artistTrack->getArtist()->getId();
+                if (!in_array($id, $artist_ids)) {
+                    $em->remove($artistTrack);
+                } else {
+                    array_splice($artist_ids, array_search($id, $artist_ids), 1);
+                }
+            }
+
+            foreach ($artist_ids as $artist_id) {
+                $artist = $em->getRepository(Artist::class)->find($artist_id);
+                if (!$artist) {
+                    throw new \Exception("Arist not found");
+                }
+
+                $artistTrack = new ArtistTrack();
+                $artistTrack->setArtist($artist);
+                $artistTrack->setTrack($track);
+                $em->persist($artistTrack);
+            }
+
+
             $em->persist($track);
             $em->flush();
-            $manager->update_metadata($track);
+            $track_id = $track->getId();
+            $em->detach($track);
+            $em->clear();
+
+            $manager->update_metadata($em->getRepository(Track::class)->find($track_id));
             return $this->redirectToRoute("app_index");
         }
 

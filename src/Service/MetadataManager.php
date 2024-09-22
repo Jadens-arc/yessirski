@@ -17,7 +17,7 @@ class MetadataManager
 
     public function update_artist(Track $track) {
         $artists = $track->getArtistTracks();
-        if (!$artists) {
+        if ($artists->count() < 1) {
             throw new \Exception("No artists to this track");
         }
         $artist = $artists->get(0)->getArtist();

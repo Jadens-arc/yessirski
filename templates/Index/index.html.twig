@@ -11,20 +11,26 @@
             <input name="video-title" id="video-title" placeholder="My favorite video" class="border-0 w-100 form-control shadow-none me-3" type="url" required>
             <button class="btn btn-primary" id="download-btn">Download</button>
         </div>
+        <div class="form-control my-4 p-3">
+            <button class="btn btn-primary" id="add-artist-btn">Add Artist</button>
+            <div id="artists" class="artists"></div>
+        </div>
     </div>
-
     <strong class="mt-3">Recently Saved...</strong>
     <div>
         {% for track in tracks %}
             <div id="{{ track.uuid }}" class="alert alert-light ">
                 <div class="d-flex flex-column-reverse flex-md-row justify-content-between ">
                     <strong style="cursor: pointer; text-decoration: underline" onclick="play_track('{{ track.path }}')">{{ track.title }}</strong>
-
                     <div class="d-flex flex-row mb-3 mb-lg-0">
                         <a class="btn btn-sm btn-secondary d-block me-2" download href="/{{ track.path }}">Save to Device</a>
                         <a class="btn btn-sm btn-primary" href="{{ path("app_track_edit", {"uuid": track.uuid}) }}">Edit</a>
                     </div>
                 </div>
+                <p>{% for artistTrack in track.artistTracks %}
+                        {{ artistTrack.artist.name }}{% if artistTrack != track.artistTracks|last %}, {% endif %}
+                    {% endfor %}
+                </p>
                 <span>Downloaded @ {{ track.created|date("d/m/y h:i a") }}</span>
                 <div id="control_container_{{ track.path }}"></div>
             </div>
@@ -47,10 +53,30 @@
             document.getElementById("control_container_" + path).appendChild(playing);
         }
         $("document").ready(() => {
+            $("#add-artist-btn").on("click", (e) => {
+                // Create a new select element
+                let selector = $('<select class="artist-select"></select>');
+
+                $("#artists").append(selector);
+
+                // Initialize the select2 plugin on the new select element
+                selector.select2({
+                    ajax: {
+                        url: "{{ path("app_dropdown_artists") }}",
+                        dataType: "json",
+                    }
+                });
+
+                // Append the new select element to the artists container
+            });
+
             $("#search-btn").on("click", () => {
+
                 let url = "{{ path("app_search") }}";
                 fetch(url, {
-                    body: JSON.stringify({"url": $("#url").val()}),
+                    body: JSON.stringify({
+                        "url": $("#url").val(),
+                    }),
                     method: "POST"
                 })
                     .then(response => response.json())
@@ -60,11 +86,16 @@
                             $("#video-title").val(data["data"]["title"]);
 
                             $("#download-btn")[0].addEventListener("click", () => {
+                                let artists = $(".artist-select").toArray().reduce((result, artist) => {
+                                    if (artist.value) result.push(artist.value);
+                                    return result;
+                                }, []);
                                 let url = "{{ path("app_download") }}";
                                 fetch(url, {
                                     body: JSON.stringify({
                                         "url": $("#url").val(),
                                         "title": $("#video-title").val(),
+                                        "artists": artists,
                                     }),
                                     method: "POST"
                                 })

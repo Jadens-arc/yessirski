@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <a href="{{ path("app_artist_new") }}" class="btn btn-primary">Add Artist</a>
+    <table class="table">
+        <th>
+            <td>Name</td>
+        </th>
+        <tbody>
+        {% for artist in artists %}
+            <tr>
+                <td></td>
+                <td><a href="{{ path("app_artist_edit", {"id": artist.id}) }}">{{ artist.name }}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

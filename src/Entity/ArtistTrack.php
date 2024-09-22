@@ -30,7 +30,7 @@ class ArtistTrack
 
     public function __construct()
     {
-        $this->artist = new ArrayCollection();
+        $this->created = new \DateTime();
     }
 
     public function getId(): ?int

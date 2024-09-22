@@ -3,6 +3,12 @@
 {% block body %}
     {{ form_start(form) }}
         {{ form_row(form.title) }}
+        {{ form_row(form.artists) }}
+
+        <div id="artists" class="form-control my-3 p-3 d-flex flex-row overflow-x-scroll align-items-center">
+            <button class="btn btn-primary me-2" style="width: fit-content; white-space: nowrap" id="add-artist-btn">Add Artist</button>
+        </div>
+
         <div class="mb-3">
             {{ form_widget(form.save) }}
             <a class="btn btn-danger" onclick="
@@ -20,4 +26,50 @@
         </div>
 
     {{ form_end(form, {"render_rest": false}) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function addSelector(data = []) {
+            let selector = $('<select class="artist-select"></select>');
+            $("#artists").append(selector);
+            let deleteBtn = $('<a class="text-light me-3"><i class="bi bi-trash"></i></a>')
+            deleteBtn.click(e => {
+                selector.select2('destroy');
+                selector.remove();
+                deleteBtn.remove();
+            });
+            $("#artists").append(deleteBtn);
+            selector.select2({
+                data: data,
+                ajax: {
+                    url: "{{ path("app_dropdown_artists") }}",
+                    dataType: "json",
+                }
+            });
+        }
+
+        $(document).ready(() => {
+            {% for artistTrack in track.artistTracks %}
+            {
+                let artist = [{id: {{ artistTrack.artist.id }}, text: "{{ artistTrack.artist.name }}"}];
+                addSelector(artist);
+            }
+            {% endfor %}
+
+            $("#add-artist-btn").on("click", (e) => {
+                e.preventDefault();
+                addSelector();
+            });
+
+            $("#track_save").click((e) => {
+                let artists = $(".artist-select").toArray().reduce((result, artist) => {
+                    if (artist.value) result.push(artist.value);
+                    return result;
+                }, []);
+
+                $("#track_artists").val(artists.join(","));
+            });
+        });
+    </script>
 {% endblock %}

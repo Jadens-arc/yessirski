@@ -11,7 +11,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,17 +27,7 @@ class TrackType extends AbstractType
             ->add('created', DateTimeType::class, [
                 'widget' => 'single_text',
             ])
-            ->add('artists', CollectionType::class, [
-                'entry_type' => EntityType::class,
-                'entry_options' => [
-                    'class' => Artist::class,
-                    'choice_label' => 'name',
-                ],
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'prototype' => true,                  // Enables the prototype feature
-                'prototype_name' => '__name__',       // The placeholder for new artist dropdowns
+            ->add('artists', HiddenType::class, [
                 'mapped' => false,
             ])
             ->add("save", SubmitType::class)
