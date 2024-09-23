@@ -4,16 +4,20 @@ namespace App\Controller;
 
 use App\Entity\Artist;
 use App\Entity\ArtistTrack;
+use App\Entity\Play;
 use App\Entity\Track;
 use App\Form\TrackType;
 use App\Service\MetadataManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class TrackController extends AbstractController
 {
@@ -73,6 +77,23 @@ class TrackController extends AbstractController
 
         return $this->render('track/edit.html.twig', ["form" => $form, "track" => $track]);
     }
+
+    #[Route('/track/{uuid}/audio', name: 'app_track_audio')]
+    public function getAudio(Request $request, Filesystem $filesystem, EntityManagerInterface $em, $uuid): Response
+    {
+        $track = $em->getRepository(Track::class)->findOneBy(["uuid" => Uuid::fromString($uuid)]);
+        // make a new play entity, attach it to track and to artist
+        $play = new Play();
+        $play->setTrack($track);
+        $em->persist($play);
+        $em->flush();
+
+        $path = $this->getParameter('kernel.project_dir') . "/public/" . $track->getPath();
+        // This should return the file located in /mySymfonyProject/web/public-resources/TextFile.txt
+        // to being viewed in the Browser
+        return new BinaryFileResponse($path);
+    }
+
     #[Route('/track/{uuid}/delete', name: 'app_track_delete')]
     public function delete(Request $request, EntityManagerInterface $em, $uuid): Response
     {

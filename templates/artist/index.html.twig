@@ -10,12 +10,16 @@
             <th>
                 Number of Tracks
             </th>
+            <th>
+                Plays
+            </th>
         </tr>
         <tbody>
         {% for artist in artists %}
             <tr>
                 <td><a href="{{ path("app_artist_edit", {"id": artist.id}) }}">{{ artist.name }}</a></td>
                 <td>{{ artist.getTracks|length }}</td>
+                <td>{{ artist.countPlays }}</td>
             </tr>
         {% endfor %}
         </tbody>

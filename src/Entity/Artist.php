@@ -84,4 +84,13 @@ class Artist
         }
         return $tracks;
     }
+
+    public function countPlays(): int
+    {
+        $count = 0;
+        foreach ($this->artist_tracks as $artist_track) {
+            $count += $artist_track->getTrack()->getPlays()->count();
+        }
+        return $count;
+    }
 }

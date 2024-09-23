@@ -41,12 +41,19 @@ class Track
     #[ORM\OneToMany(targetEntity: ArtistTrack::class, mappedBy: 'track')]
     private Collection $artist_tracks;
 
+    /**
+     * @var Collection<int, Play>
+     */
+    #[ORM\OneToMany(targetEntity: Play::class, mappedBy: 'track')]
+    private Collection $plays;
+
     public function __construct()
     {
         $this->uuid = Uuid::v1();
         $this->created = new \DateTime();
         $this->active = true;
         $this->artist_tracks = new ArrayCollection();
+        $this->plays = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -150,6 +157,36 @@ class Track
             // set the owning side to null (unless already changed)
             if ($artistTrack->getTrack() === $this) {
                 $artistTrack->setTrack(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Play>
+     */
+    public function getPlays(): Collection
+    {
+        return $this->plays;
+    }
+
+    public function addPlay(Play $play): static
+    {
+        if (!$this->plays->contains($play)) {
+            $this->plays->add($play);
+            $play->setTrack($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlay(Play $play): static
+    {
+        if ($this->plays->removeElement($play)) {
+            // set the owning side to null (unless already changed)
+            if ($play->getTrack() === $this) {
+                $play->setTrack(null);
             }
         }
 
