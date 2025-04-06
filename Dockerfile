@@ -29,7 +29,7 @@ COPY ./app /app
 
 # Accept .env file as a build argument
 ARG ENV_FILE=.env
-COPY ${ENV_FILE} /app/.env.local
+COPY ${ENV_FILE} /app/.env
 ENV COMPOSER_MEMORY_LIMIT=-1
 
 RUN composer install --optimize-autoloader
